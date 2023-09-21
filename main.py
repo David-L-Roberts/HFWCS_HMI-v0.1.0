@@ -1,6 +1,6 @@
 from nicegui import ui, app
-
-from SVG_Resources import svgElement
+from MovementRegion import MovementRegion
+from SVG_Arrow_Icons import Directions
 
 BG_IMG_PATH = "Resources/ExampleIMG.png"
 
@@ -18,8 +18,7 @@ BG_IMG_PATH = "Resources/ExampleIMG.png"
 
 
 class MainApp:
-    """
-    """
+    """ Class for running main application """
     def __init__(self) -> None:
         ui.query('.nicegui-content').classes('p-0 m-0 gap-0') # remove defualt page padding
         
@@ -87,35 +86,20 @@ class MainApp:
 
     def create_cols(self):
         flex_col_format = 'flex flex-col flex-nowrap basis-%s relative'
-        html_format = "absolute-center"
-        margin = 0.5
-        bg_normal = "zinc-600"
-        opacity = 25
-        bg_hover = "violet-400"
-        bg_hover_2 = "green-400"
-        opacity_hover = 30
 
         # col 1
         with ui.element('div').classes(flex_col_format %"[20%]"):
-                with ui.row().classes(f"basis-full bg-gradient-to-l from-{bg_normal}/[.{opacity}] m-{margin} relative hover:from-{bg_hover}/[.{opacity_hover}]"):
-                    ui.html(svgElement.arrow_left).classes(html_format)
+            MovementRegion(Directions.LEFT, 100)
 
         # col 2
         with ui.element('div').classes(flex_col_format %"[60%]"):
-                # with ui.row().classes(f"basis-[35%] bg-gradient-to-t from-{bg_normal}/[.{opacity}] m-{margin} relative hover:from-{bg_hover}/[.{opacity_hover}]"):
-                with ui.row().classes(f"basis-[35%] bg-gradient-to-t from-{bg_normal}/[.{opacity}] m-{margin} relative hover:from-blue-500/[.{opacity_hover}] hover:to-green-400/[.{opacity_hover}]"):
-                    ui.html(svgElement.arrow_up).classes(html_format)
-                
-                with ui.row().classes(f"basis-[30%] bg-{bg_normal}/[.{opacity}] m-{margin} relative hover:bg-{bg_hover}/[.{opacity_hover}]"):
-                    ui.html(svgElement.square_stop).classes(html_format)
-
-                with ui.row().classes(f"basis-[35%] bg-gradient-to-b from-{bg_normal}/[.{opacity}] m-{margin} relative hover:from-{bg_hover}/[.{opacity_hover}]"):
-                    ui.html(svgElement.arrow_down).classes(html_format)
+            MovementRegion(Directions.UP, 35)
+            MovementRegion(Directions.STOP, 30)
+            MovementRegion(Directions.DOWN, 35)
 
         # col 3
         with ui.element('div').classes(flex_col_format %"[20%]"):
-                with ui.row().classes(f"basis-full bg-gradient-to-r from-{bg_normal}/[.{opacity}] m-{margin} relative hover:from-{bg_hover}/[.{opacity_hover}]"):
-                    ui.html(svgElement.arrow_right).classes(html_format)
+            MovementRegion(Directions.RIGHT, 100)
 
 
 # =====================================
@@ -127,7 +111,9 @@ def main():
         host='127.0.0.1',
         port=10_000,
         dark=None,
-        favicon='♿'
+        favicon='♿',
+        show=False,
+        reload=False
     )
 
 main()

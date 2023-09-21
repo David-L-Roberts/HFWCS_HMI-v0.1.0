@@ -1,4 +1,13 @@
-class svgElement:
+from enum import Enum
+
+class Directions(Enum):
+    DOWN    = "down"
+    UP      = "up"
+    LEFT    = "left"
+    RIGHT   = "right"
+    STOP    = "stop"
+
+class SvgElement:
     __arrow_colour = "stroke-indigo-500/60"
     # __arrow_colour = "bg-gradient-to-t from-indigo-500 via-purple-500 to-pink-500 bg-clip-content"
     __stroke_width = "3px"
@@ -30,6 +39,17 @@ class svgElement:
         <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 017.5 5.25h9a2.25 2.25 0 012.25 2.25v9a2.25 2.25 0 01-2.25 2.25h-9a2.25 2.25 0 01-2.25-2.25v-9z" />
         </svg>'''
 
+    __icon_dict = {
+        Directions.DOWN: arrow_down,
+        Directions.UP:  arrow_up,
+        Directions.LEFT: arrow_left,
+        Directions.RIGHT: arrow_right,
+        Directions.STOP: square_stop
+    }
 
-    
+    @classmethod
+    def get_svgElement(cls, direction: Directions):
+        return cls.__icon_dict[direction]
+
+
     
