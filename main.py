@@ -2,7 +2,7 @@ from nicegui import ui, app
 
 from SVG_Resources import svgElement
 
-BG_IMG_PATH = "D:/1. My Folders/Programming/Python/100_Uni_Projects/01_HFWCS_HMI/HFWCS_HMI-v0.1.0/Resources/ExampleIMG.png"
+BG_IMG_PATH = "Resources/ExampleIMG.png"
 
 # REQ
 # TODO: on long hover > change colour
@@ -21,7 +21,7 @@ class MainApp:
     """
     """
     def __init__(self) -> None:
-        ui.query('.nicegui-content').classes('p-0') # remove defualt page padding
+        ui.query('.nicegui-content').classes('p-0 m-0 gap-0') # remove defualt page padding
         
         # page header
         with ui.row().classes("w-full relative"):
@@ -124,7 +124,7 @@ def main():
     mainApp = MainApp()
     ui.run(
         title="HFWCS HMI-v0.0.2", 
-        # host='127.0.0.1',
+        host='127.0.0.1',
         port=10_000,
         dark=None,
         favicon='♿'
