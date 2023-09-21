@@ -5,16 +5,14 @@ from SVG_Arrow_Icons import Directions
 BG_IMG_PATH = "Resources/ExampleIMG.png"
 
 # REQ
-# TODO: on long hover > change colour
-# TODO: replace text with SVG or icons (arrows)
 # TODO: Title Bar
 #   - status info text (alerts or lack of alerts (healthy)) 
+#       - Speech: E = enable, D = Disable (green / red coloured text depending on state)
 #   - Colour change (upon alert raising)
-# TODO: generate notifications
+# TODO: generate notifications upon data reception
 # TODO: generate movement commands upon long hover
-
-# OPT
-# TODO: Time in header
+# TODO: 
+# TODO:
 
 
 class MainApp:
@@ -37,7 +35,7 @@ class MainApp:
     def add_header(self):
         # header spacing allocation
         basis_title = 30
-        basis_button = 20   # x2
+        basis_button = 40
         basis_menu = 30
         # add header elements
         with ui.header().classes('flex flex-row py-1 px-4 no-wrap h-[5vh] bg-stone-900 items-center'):
@@ -48,24 +46,28 @@ class MainApp:
                 ui.html('Wheelchair <a class="text-bold text-[#818cf8]">HMI</a>'). \
                     classes(f"text-lg text-left")
             # temp buttons for testing
-            ui.button("Emergency Stop", color="blue-grey-9") \
-                .on('click', lambda: ui.notify("Emergency Stop Activated", type='negative', position='center')) \
-                .classes(f"basis-[{basis_button}%] text-center")
-            ui.button(f"Auto Break", color="blue-grey-9") \
-                .on('click', lambda: ui.notify("Auto Break Activated", type='warning', position='center')) \
-                .classes(f"basis-[{basis_button}%] text-center")
+            with ui.row().classes(f"basis-[{basis_button}%] flex"):
+                ui.button("Emergency Stop", color="blue-grey-9") \
+                    .on('click', lambda: ui.notify("Emergency Stop Activated", type='negative', position='center')) \
+                    .classes(f"text-center flex-auto")
+                    # .classes(f"basis-[{basis_button}%] text-center")
+                ui.button("Auto Break", color="blue-grey-9") \
+                    .on('click', lambda: ui.notify("Auto Break Activated", type='warning', position='center')) \
+                    .classes(f"text-center flex-auto")
+                    # .classes(f"basis-[{basis_button}%] text-center")
+                ui.button("Test", color="blue-grey-9") \
+                    .on('click', self.testButton) \
+                    .classes(f"text-center flex-auto")
             # place holder text
             with ui.row().classes(f"basis-[{basis_menu}%] items-center"):
                 textLabel = ui.label("Menu").classes(f"text-lg text-right pr-[5px] ml-auto")
                 self.create_menu(textLabel)
 
     def create_menu(self, menu_text: ui.label):
-        #  with ui.row().classes('w-full '):
-        with ui.button(icon='menu'):
+        with ui.button(icon='menu', color="indigo-500"):
             with ui.menu() as menu:
                 ui.menu_item('Terminate Application', lambda: app.shutdown())
-                ui.menu_item('Menu item 2', lambda: menu_text.set_text('Selected item 2'))
-                ui.menu_item('Menu item 3 (keep open)', lambda: menu_text.set_text('Selected item 3'), auto_close=False)
+                ui.menu_item('Menu item 2 (keep open)', lambda: menu_text.set_text('Selected item 3'), auto_close=False)
                 ui.separator()
                 ui.menu_item('Close', on_click=menu.close)
 
@@ -100,6 +102,12 @@ class MainApp:
         # col 3
         with ui.element('div').classes(flex_col_format %"[20%]"):
             MovementRegion(Directions.RIGHT, 100)
+
+    # ========================================================================================
+    #   Testing Ground
+    # ========================================================================================
+    def testButton(self):
+        print("Test button")
 
 
 # =====================================

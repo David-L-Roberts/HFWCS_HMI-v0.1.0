@@ -1,12 +1,16 @@
 from nicegui import ui
 from SVG_Arrow_Icons import SvgElement, Directions
 
+DELAY_TIME = 0.75   # seconds
+
 class MovementRegion():
     # class attributes
     bg_hover        = "violet-400"
     opacity_hover   = 30
     bg_hover2_to    = "green-400"
     bg_hover2_from  = "blue-500"
+    hoverStyle_default  = f"hover:from-{bg_hover}/[.{opacity_hover}]"
+    hoverStyle_active   = f"hover:to-{bg_hover2_to}/[.{opacity_hover}] hover:from-{bg_hover2_from}/[.{opacity_hover}]"
 
     def __init__(self, arrowDirection: Directions, basis: int) -> None:
         # formatting config
@@ -16,8 +20,9 @@ class MovementRegion():
         opacity         = 25
 
         self.name = arrowDirection
-        self.timerStart = False
-        self.cursorExit = True
+        self.timerStart: bool = False # activation timer has begun counting down
+        self.cursorExit: bool = True  # The cursor has exited the screen region
+        self.regionActive: bool = False  # The region is considered active
 
         # format background based on arrow direction
         directionGradients = {
@@ -42,19 +47,38 @@ class MovementRegion():
                 .classes(html_format)
     
     def startHoverTimer(self):
-        print(f"Mouse entered: {self.name}")    # DEBUG 
         self.cursorExit = False
+
         if self.timerStart:
             return
         
-        ui.timer(1, self.timerEvent, once=True)
+        ui.timer(DELAY_TIME, self.timerEvent, once=True)
         self.timerStart = True
 
     def timerEvent(self):
-        print("Timer activated")    # DEBUG 
-        self.timerStart = False
-
+        self.timerStart = False     # reset timer flag
+        # check if cursor is still within region
+        if self.cursorExit:
+            return
+        # activate the region
+        self.regionActive = True
+        self.reStyleRegion()        # restyle the region as active
 
     def setExitFlag(self):
         self.cursorExit = True
-        print(f"Mouse left: {self.name}")   # DEBUG 
+        if self.regionActive:
+            self.regionActive = False
+            self.reStyleRegion()
+
+    def reStyleRegion(self):
+        # change styling of movement region 
+        if self.regionActive:   # active region styling
+            self.bgRow.classes(
+                remove=self.hoverStyle_default,
+                add=self.hoverStyle_active
+            )
+        else:                   # defautl region styling
+            self.bgRow.classes(
+                remove=self.hoverStyle_active,
+                add=self.hoverStyle_default
+            )
