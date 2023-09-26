@@ -1,7 +1,7 @@
 from nicegui import ui
 from SVG_Arrow_Icons import SvgElement, Directions
 
-DELAY_TIME = 0.75   # seconds
+DELAY_TIME = 0.60   # seconds
 
 class MovementRegion():
     # class attributes
