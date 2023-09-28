@@ -30,7 +30,7 @@ class MainApp:
             self.add_header()
 
         # page body
-        with ui.element('div').classes("w-full h-[95vh] bg-slate-900 relative"):
+        with ui.element('div').classes("w-full h-[95vh] bg-stone-800 relative"):
             self.add_background_img()
             self.add_grid()
 
@@ -87,7 +87,7 @@ class MainApp:
                     auto_close=False
                 )
                 ui.separator()
-                ui.menu_item('Terminate Application', lambda: app.shutdown())
+                ui.menu_item('Terminate Application (K)', lambda: app.shutdown())
                 ui.separator()
                 ui.menu_item('Close', on_click=menu.close)
 
@@ -127,25 +127,27 @@ class MainApp:
     #   Key Bindings
     # ========================================================================================
     def handle_key(self, e: KeyEventArguments):
-        if (e.key == 'e') and (e.action.keydown) and (not e.action.repeat):
+        if (not e.action.keydown) or (e.action.repeat):
+            return
+        if (e.key == 'e'):
             print("Key Pressed: E")
             self.eyeTrackingEnable()
-        elif (e.key == 'd') and (e.action.keydown) and (not e.action.repeat):
+        elif (e.key == 'd'):
             print("Key Pressed: D")
             self.eyeTrackingDisable()
-        elif (e.key == 'k') and (e.action.keydown) and (not e.action.repeat):
+        elif (e.key == 'k'):
             print("Key Pressed: K")
             print("! Shutting Down Application !")
             app.shutdown()
 
 
     def eyeTrackingEnable(self):
-        print("Movement commands from eye tracking have been ENABLED.")
+        print("Eye tracking movement command generation has been ENABLED.")
         self.indLabelEnable.classes(replace=self.style_indLabel_active)
         self.indLabelDisable.classes(replace=self.style_indLabel_deactive)
     
     def eyeTrackingDisable(self):
-        print("Movement commands from eye tracking have been DISABLED.")
+        print("Eye tracking movement command generation has been DISABLED.")
         self.indLabelEnable.classes(replace=self.style_indLabel_deactive)
         self.indLabelDisable.classes(replace=self.style_indLabel_active)
 

@@ -1,0 +1,5 @@
+{
+    "ComPort": "COM8",
+    "Baudrate": 9600,
+    "ReadTimeoutSec": 1
+}
