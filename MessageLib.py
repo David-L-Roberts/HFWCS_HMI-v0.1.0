@@ -1,4 +1,4 @@
-# types of Master messages and their control characters
+# types of messages and their control characters
 masterMsgCodes = {
     "Poll":         b'\xFB',
     "Recall":       b'\xFD',
@@ -7,7 +7,7 @@ masterMsgCodes = {
     "Ack Slave":    b'\xFA',
 }
 
-# types of slave messages and their control characters
+# types of control characters and their message types
 msgTypeLookup = {
     "F1": "Acknowledge Master",
     "F2": "Indication Data Response",

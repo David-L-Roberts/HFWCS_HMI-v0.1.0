@@ -15,8 +15,6 @@ from nicegui import app, ui
 # refresh period of webcam feed, in seconds
 FRAME_REFRESH_T = 0.05
 
-STATIC_IMG_PATH = "D:/1. My Folders/Programming/Python/100_Uni_Projects/01_HFWCS_HMI/HFWCS_HMI-v0.0.1/Resources/Empty_Transparent.png"
-
 # We need an executor to schedule CPU-intensive tasks with `loop.run_in_executor()`.
 process_pool_executor = concurrent.futures.ProcessPoolExecutor()
 # In case you don't have a webcam, this will provide a black placeholder image.
@@ -51,10 +49,6 @@ with ui.element('div').classes("w-full h-[95vh] bg-slate-900 relative"):
         # For non-flickering image updates an interactive image is much better than `ui.image()`.
         video_image = ui.interactive_image().classes('w-full h-full absolute-center')
         video_image.style("max-width: 1500px")
-
-    with ui.element('div').classes('w-full h-[95vh] absolute'):
-        static_image = ui.interactive_image(STATIC_IMG_PATH, cross=True).classes('absolute-center')
-        static_image.style("max-width: 1500px")
 
 # A timer constantly updates the source of the image.
 # Because data from same paths are cached by the browser,

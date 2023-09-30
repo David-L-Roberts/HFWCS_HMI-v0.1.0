@@ -11,6 +11,8 @@ class ComPort(serial.Serial):
         self.reset_input_buffer()
         self.reset_output_buffer()
 
+        self.txData: bytes= b''
+
     
     def _open_com_port(self, portNum):
         """Open the Serial Com port"""
@@ -33,16 +35,31 @@ class ComPort(serial.Serial):
         else:
             raise Exception("No Com ports Available!")
     
-    def writeSerial(self):               # TODO
-        messageTx = b''
-        self.write(messageTx)
+    def add_txData(self, messageBytes: bytes):
+        """Add bytes to be written to serial to queue."""
+        self.txData += messageBytes
+
+    def writeSerial(self):
+        """Write stored bytes in queue to serial. Empty queue when complete."""
+        for dataByte in self.txData:
+            self.write(dataByte)
+        self.txData = b''
     
-    def readSerial(self):               # TODO
+    def readSerial(self):
+        """Attempt to read data from comport.
+        Returns empty byte string if no data was read.
+        """
         inputByteArray: bytes = b''
         bytes_in_waiting = self.in_waiting
         if(bytes_in_waiting > 0):
             Log.log(f"Bytes Recieved: {bytes_in_waiting}")
         else: 
-            return
+            return b''    # no data available for reading
+        
         while(self.in_waiting > 0):
-            inputByteArray += self.read(size=10)
+            inputByteArray += self.read()
+
+        return inputByteArray    # data succesfully read
+
+
+

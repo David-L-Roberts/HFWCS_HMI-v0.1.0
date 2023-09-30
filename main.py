@@ -2,6 +2,9 @@ from nicegui import ui, app
 from MovementRegion import MovementRegion
 from SVG_Arrow_Icons import Directions
 from nicegui.events import KeyEventArguments
+from ComPort import ComPort
+from Utils import load_settings
+from ComReader import ComReader
 
 BG_IMG_PATH = "Resources/ExampleIMG.png"
 
@@ -21,7 +24,18 @@ BG_IMG_PATH = "Resources/ExampleIMG.png"
 class MainApp:
     """ Class for running main application """
     def __init__(self) -> None:
-        ui.query('.nicegui-content').classes('p-0 m-0 gap-0') # remove defualt page padding
+        # remove defualt page padding
+        ui.query('.nicegui-content').classes('p-0 m-0 gap-0') 
+
+        settings = load_settings()
+        # initialise comPort object
+        self.comPort = ComPort(
+            portNum=settings["ComPort"],
+            baudrate=settings["Baudrate"],
+            timeout=settings["ReadTimeoutSec"]
+        )
+        self.comReader = ComReader(self.comPort)
+
         # add key bindings
         self.keyboard = ui.keyboard(on_key=self.handle_key)
         
@@ -65,10 +79,10 @@ class MainApp:
                     .classes(self.style_indLabel_deactive)
             # drop down menu    
             with ui.row().classes(f"basis-[{basis_menu}%] items-center"):
-                textLabel = ui.label("Menu").classes(f"text-lg text-right pr-[5px] ml-auto")
-                self.create_menu(textLabel)
+                ui.label("Menu").classes(f"text-lg text-right pr-[5px] ml-auto")
+                self.create_menu()
 
-    def create_menu(self, menu_text: ui.label):
+    def create_menu(self):
         with ui.button(icon='menu', color="indigo-500"):
             with ui.menu() as menu:
                 ui.menu_item(
