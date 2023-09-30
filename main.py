@@ -5,8 +5,8 @@ from nicegui.events import KeyEventArguments
 from ComPort import ComPort
 from Utils import load_settings
 from ComReader import ComReader
-from Logging import Log
 from DataProcessor import DataProcessor
+from Logging import Log
 
 
 BG_IMG_PATH = "Resources/ExampleIMG.png"
@@ -19,8 +19,6 @@ BG_IMG_PATH = "Resources/ExampleIMG.png"
 # TODO: Title Bar
 #   - Colour change (upon alert raising)
 # TODO: generate notifications upon data reception
-# TODO: generate movement commands upon long hover
-# TODO: 
 # TODO:
 
 class MainApp:
@@ -39,8 +37,8 @@ class MainApp:
             timeout=settings["ReadTimeoutSec"]
         )
         MovementRegion.comPort = self.comPort
+        # Handle data received from serial 
         self.comReader = ComReader(self.comPort)
-        # add periodic ...
         ui.timer(1.0, self.serviceRxData)
 
         # add key bindings
@@ -159,17 +157,17 @@ class MainApp:
             self.eyeTrackingDisable()
         elif (e.key == 'k'):
             print("Key Pressed: K")
-            print("! Shutting Down Application !")
+            Log.log("Shutting Down Application.")
             app.shutdown()
 
 
     def eyeTrackingEnable(self):
-        print("Eye tracking movement command generation has been ENABLED.")
+        Log.log("Movement command generation has been ENABLED.")
         self.indLabelEnable.classes(replace=self.style_indLabel_active)
         self.indLabelDisable.classes(replace=self.style_indLabel_deactive)
     
     def eyeTrackingDisable(self):
-        print("Eye tracking movement command generation has been DISABLED.")
+        Log.log("Movement command generation has been DISABLED.")
         self.indLabelEnable.classes(replace=self.style_indLabel_deactive)
         self.indLabelDisable.classes(replace=self.style_indLabel_active)
 
@@ -181,10 +179,7 @@ class MainApp:
             charCode = self.comReader.popNextMessage()
             if charCode == None:
                 return  # no data to process
-            
-            
-            
-
+            self.dataProcessor.processCharCode(charCode)
 
     # ========================================================================================
     #   Testing Ground
@@ -197,6 +192,10 @@ class MainApp:
 # =====================================
 
 def main():
+    print("="*30)
+    Log.log("Application Start")
+    print("="*30)
+
     mainApp = MainApp()
     ui.run(
         title="HFWCS HMI-v0.1.0", 

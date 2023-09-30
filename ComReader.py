@@ -34,7 +34,7 @@ class ComReader():
         
     def __processDataBytes(self):
         rxDataStr = self._comPort.bytesToString(self._rxDataBytes) # convert data bytes to string format
-        Log.log(f"Rx Data <- {rxDataStr}")      # log received bytes
+        Log.log(f"Rx Data <- {rxDataStr}", Log.DEBUG)      # log received bytes
 
         # process individual bytes:
         splitData: list = rxDataStr.split(' ')
@@ -52,7 +52,7 @@ class ComReader():
             # determine type of code received
             messageTypes.append(self._comPort.getMessageType(byteCode))
 
-        Log.log(f"Rx Message Type: {messageTypes}")
+        Log.log(f"Rx Message Type: {messageTypes}", Log.DEBUG)
 
     def popNextMessage(self):
         """returns the oldest unread character code received from serial.

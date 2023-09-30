@@ -34,8 +34,9 @@ class ComPort(serial.Serial):
 
     def writeSerial(self, messageBytes: bytes):
         """Write given bytes to serial."""
-        Log.log(f"Tx Data -> {self.bytesToString(messageBytes)}")
-        Log.log(f"Tx message type: {self.getMessageType(messageBytes)}")
+        messageStr = self.bytesToString(messageBytes)
+        Log.log(f"Tx Data -> {messageStr}", Log.DEBUG)
+        Log.log(f"Tx message type: {self.getMessageType(messageStr)}", Log.DEBUG)
         self.write(messageBytes)
     
     def readSerial(self):
@@ -63,7 +64,7 @@ class ComPort(serial.Serial):
             messageType = msgTypeLookup[controlCode[:2]]
         except:
             messageType = controlCode
-            Log.log(f"Received invalid Control Code {controlCode}.", logFlag="|ERROR|")
+            Log.log(f"Received invalid Control Code ({controlCode}).", Log.ERROR)
 
         return messageType
 

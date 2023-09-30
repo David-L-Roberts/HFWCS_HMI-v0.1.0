@@ -49,8 +49,10 @@ class MovementRegion():
             .classes(f"basis-[{basis}%] {directionGradients[arrowDirection]} \
                      from-{bg_normal}/[.{opacity}] m-{margin} relative \
                      hover:from-{self.bg_hover}/[.{self.opacity_hover}]")
-        self.bgRow.on("mouseenter", self.startHoverTimer)
-        self.bgRow.on("mouseleave", self.setExitFlag)
+
+        if not (self.name == Directions.STOP): 
+            self.bgRow.on("mouseenter", self.startHoverTimer)
+            self.bgRow.on("mouseleave", self.setExitFlag)
 
         # arrow element
         with self.bgRow:
@@ -71,6 +73,8 @@ class MovementRegion():
         if self.regionActive:
             self.regionActive = False
             self.__reStyleRegion()
+            # send stop movement code
+            self.__sendMovementCommand(txMessageCodes[Directions.STOP])
 
     def __timerEvent(self):
         self.timerStart = False     # reset timer flag
@@ -81,7 +85,7 @@ class MovementRegion():
         # activate the region
         self.regionActive = True
         self.__reStyleRegion()        # restyle the region as active
-        self.__sendMovementCommand()    # send movement command corresponding with movement region's direction
+        self.__sendMovementCommand(self.movementCmd)    # send movement command corresponding with movement region's direction
 
     def __reStyleRegion(self):
         # change styling of movement region 
@@ -96,5 +100,5 @@ class MovementRegion():
                 add=self.hoverStyle_default
             )
     
-    def __sendMovementCommand(self):
-        MovementRegion.comPort.writeSerial(self.movementCmd)
+    def __sendMovementCommand(self, command: bytes):
+        MovementRegion.comPort.writeSerial(command)

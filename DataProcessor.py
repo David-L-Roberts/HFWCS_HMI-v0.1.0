@@ -17,9 +17,12 @@ class DataProcessor:
     def processCharCode(self, charCode: str):
         if type(charCode) == tuple:
             charCode, self.dataVal = charCode
-
-        func = self.processorDict[charCode]
-        func()
+        try:
+            func = self.processorDict[charCode]
+        except KeyError:
+            Log.log(f"Cannot process char code ({charCode}) in {DataProcessor}.", Log.WARNING)
+        else:
+            func()
     
     def __service_ACK(self):
         Log.log("Processing: ACK", Log.DEBUG)
