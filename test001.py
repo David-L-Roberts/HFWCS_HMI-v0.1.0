@@ -1,16 +1,14 @@
-# text = "A B C D E F"
-# splitText = text.split(' ')
-# print(text)
-# print(splitText)
 
+def getMessageType(controlCode: str):
+    """Return the message type of the last read message."""
+    try:
+        print("OK")
+        messageType = controlCode[:2]
+    except:
+        print("BAD")
+        messageType = controlCode
 
-# myList = ["FF", "EE", ("F6", "44")]
-# for element in myList:
-#     print(type(element))
-#     if type(element) == tuple:
-#         print("Tuple found!")
-# print(tuple)
+    return messageType
 
-text = b''
-if not text:
-    print("Activated")
+myList = ""
+print(getMessageType(myList))

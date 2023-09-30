@@ -1,6 +1,5 @@
-from enum import Enum
 
-class Directions(Enum):
+class Directions:
     DOWN    = "down"
     UP      = "up"
     LEFT    = "left"

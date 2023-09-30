@@ -1,7 +1,7 @@
 import serial.tools.list_ports as port_list
 import serial
-from MessageLib import msgTypeLookup
 from Logging import Log
+from MessageLib import msgTypeLookup
 
 
 class ComPort(serial.Serial):
@@ -10,9 +10,6 @@ class ComPort(serial.Serial):
         self._open_com_port(portNum)
         self.reset_input_buffer()
         self.reset_output_buffer()
-
-        self.txData: bytes= b''
-
     
     def _open_com_port(self, portNum):
         """Open the Serial Com port"""
@@ -34,16 +31,12 @@ class ComPort(serial.Serial):
                 print(f"\t{i}. {p}")
         else:
             raise Exception("No Com ports Available!")
-    
-    def add_txData(self, messageBytes: bytes):
-        """Add bytes to be written to serial to queue."""
-        self.txData += messageBytes
 
-    def writeSerial(self):
-        """Write stored bytes in queue to serial. Empty queue when complete."""
-        for dataByte in self.txData:
-            self.write(dataByte)
-        self.txData = b''
+    def writeSerial(self, messageBytes: bytes):
+        """Write given bytes to serial."""
+        Log.log(f"Tx Data -> {self.bytesToString(messageBytes)}")
+        Log.log(f"Tx message type: {self.getMessageType(messageBytes)}")
+        self.write(messageBytes)
     
     def readSerial(self):
         """Attempt to read data from comport.
@@ -61,5 +54,16 @@ class ComPort(serial.Serial):
 
         return inputByteArray    # data succesfully read
 
+    def bytesToString(self, byteData: bytes):
+        return byteData.hex(" ").upper()
 
+    def getMessageType(self, controlCode: str):
+        """Return the message type of the last read message."""
+        try:
+            messageType = msgTypeLookup[controlCode[:2]]
+        except:
+            messageType = controlCode
+            Log.log(f"Received invalid Control Code {controlCode}.", logFlag="|ERROR|")
+
+        return messageType
 

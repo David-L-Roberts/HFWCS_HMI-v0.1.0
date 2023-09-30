@@ -5,6 +5,9 @@ from nicegui.events import KeyEventArguments
 from ComPort import ComPort
 from Utils import load_settings
 from ComReader import ComReader
+from Logging import Log
+from DataProcessor import DataProcessor
+
 
 BG_IMG_PATH = "Resources/ExampleIMG.png"
 
@@ -20,24 +23,29 @@ BG_IMG_PATH = "Resources/ExampleIMG.png"
 # TODO: 
 # TODO:
 
-
 class MainApp:
     """ Class for running main application """
     def __init__(self) -> None:
         # remove defualt page padding
-        ui.query('.nicegui-content').classes('p-0 m-0 gap-0') 
+        ui.query('.nicegui-content').classes('p-0 m-0 gap-0')
+        # object for processing received serial data
+        self.dataProcessor = DataProcessor()
 
-        settings = load_settings()
         # initialise comPort object
+        settings = load_settings()
         self.comPort = ComPort(
             portNum=settings["ComPort"],
             baudrate=settings["Baudrate"],
             timeout=settings["ReadTimeoutSec"]
         )
+        MovementRegion.comPort = self.comPort
         self.comReader = ComReader(self.comPort)
+        # add periodic ...
+        ui.timer(1.0, self.serviceRxData)
 
         # add key bindings
         self.keyboard = ui.keyboard(on_key=self.handle_key)
+
         
         # page header
         with ui.row().classes("w-full relative"):
@@ -165,13 +173,25 @@ class MainApp:
         self.indLabelEnable.classes(replace=self.style_indLabel_deactive)
         self.indLabelDisable.classes(replace=self.style_indLabel_active)
 
+    # ========================================================================================
+    #   Manage Data Received
+    # ========================================================================================
+    def serviceRxData(self):
+        while True:
+            charCode = self.comReader.popNextMessage()
+            if charCode == None:
+                return  # no data to process
+            
+            
+            
 
 
     # ========================================================================================
     #   Testing Ground
     # ========================================================================================
     def testButton(self):
-        print("Test button")
+        print(self.comReader._rxDataQueue)
+
 
 
 # =====================================

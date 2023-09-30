@@ -1,8 +1,6 @@
 from threading import Thread, Event
-from MessageLib import msgTypeLookup
 from ComPort import ComPort
 import time
-import serial
 from Logging import Log
 
 
@@ -35,15 +33,14 @@ class ComReader():
         self.__processDataBytes()
         
     def __processDataBytes(self):
-        rxDataStr = self.__bytesToString(self._rxDataBytes) # convert data bytes to string format
-        Log.log(f"Rx Data <- {self._rxDataQueue}")      # log received bytes
+        rxDataStr = self._comPort.bytesToString(self._rxDataBytes) # convert data bytes to string format
+        Log.log(f"Rx Data <- {rxDataStr}")      # log received bytes
 
         # process individual bytes:
         splitData: list = rxDataStr.split(' ')
-        messageTypes = ""
+        messageTypes = []
         joinFlag = False
         for byteCode in splitData:
-            messageTypes += self.getMessageType(byteCode) + " "
             if joinFlag:
                 # group distance sensor code with distance sensor data value into a tuple, before adding to queue
                 byteCode = (self._rxDataQueue.pop(), byteCode)
@@ -52,22 +49,10 @@ class ComReader():
                 joinFlag = True
             # add received bytes to data queue
             self._rxDataQueue.append(byteCode)
+            # determine type of code received
+            messageTypes.append(self._comPort.getMessageType(byteCode))
 
         Log.log(f"Rx Message Type: {messageTypes}")
-
-    
-    def __bytesToString(self, byteData: bytes):
-        return byteData.hex(" ").upper()
-
-    def getMessageType(self, controlCode: str):   # TODO
-        """Return the message type of the last read message."""
-        try:
-            messageType = msgTypeLookup[controlCode]
-        except:
-            messageType = controlCode
-            Log.log("Received invalid Control Code.", logFlag="|ERROR|")
-
-        return messageType
 
     def popNextMessage(self):
         """returns the oldest unread character code received from serial.
