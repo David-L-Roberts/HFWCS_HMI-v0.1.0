@@ -1,4 +1,5 @@
 from Logging import Log
+from nicegui import ui
 
 class DataProcessor:
     def __init__(self) -> None:
@@ -26,24 +27,23 @@ class DataProcessor:
     
     def __service_ACK(self):
         Log.log("Processing: ACK", Log.DEBUG)
-        pass
     
     def __service_breakEnabled(self):
         Log.log("Processing: Auto Break Enabled", Log.DEBUG)
-        pass
+        ui.notify("Automatic Breaking Activated", type='warning', position='center')
     
     def __service_breakDisabled(self):
         Log.log("Processing: Auto Break Disabled", Log.DEBUG)
-        pass
+        ui.notify("Automatic Breaking Released", type='positive', position='center')
     
     def __service_stopEnabled(self):
         Log.log("Processing: Emergency Stop Enabled", Log.DEBUG)
-        pass
+        ui.notify("Emergency Stop Activated", type='negative', position='center')
     
     def __service_stopDisabled(self):
         Log.log("Processing: Emergency Stop Disabled", Log.DEBUG)
-        pass
+        ui.notify("Emergency Stop Deactivated", type='positive', position='center')
     
     def __service_DistSensor(self):
         Log.log(f"Processing: Distance Sensor Reading - {self.dataVal}", Log.DEBUG)
-        pass
+    

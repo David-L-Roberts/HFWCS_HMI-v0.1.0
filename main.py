@@ -18,8 +18,8 @@ BG_IMG_PATH = "Resources/ExampleIMG.png"
 # REQ
 # TODO: Title Bar
 #   - Colour change (upon alert raising)
-# TODO: generate notifications upon data reception
-# TODO:
+# TODO: E-stop alert only to disappear when deactiation alert is received
+# TODO: Disable movement command generation when Voice command is active
 
 class MainApp:
     """ Class for running main application """
