@@ -15,8 +15,9 @@ C_HEADER_DEFAULT = "bg-[#010409]"
 FRAME_REFRESH_T = 0.1   # refresh period of webcam feed, in seconds
 
 
-# TODO: add webcam feed
 # TODO: Add webcam fields in settings
+# TODO: Add startup hello message
+# TODO: Distance sensor reading display
 
 class MainApp:
     """ Class for running main application """
@@ -124,6 +125,7 @@ class MainApp:
     def add_background_img(self):
         with ui.element('div').classes('w-full h-[95vh] absolute'):
             # Place image for camerafeed in background of UI
+            # self.cameraFeed = ui.interactive_image().classes("absolute-center max-w-[1500px]")
             self.cameraFeed = ui.interactive_image().classes("absolute-center max-w-[1920px]")
         # setup for switching between different video feeds
         VideoSelector.setVideoImageElement(self.cameraFeed)

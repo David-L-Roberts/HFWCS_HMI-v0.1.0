@@ -46,7 +46,7 @@ class ComPort(serial.Serial):
         inputByteArray: bytes = b''
         bytes_in_waiting = self.in_waiting
         if(bytes_in_waiting > 0):
-            Log.log(f"Bytes Recieved: {bytes_in_waiting}")
+            Log.log(f"Bytes Recieved: {bytes_in_waiting}", Log.DEBUG)
         else: 
             return b''    # no data available for reading
         

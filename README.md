@@ -1,5 +1,5 @@
 # HFWCS_HMI-v0.1.0
- IDP Project HMI source code - Dev version
+ IDP Hands Free Wheelchair Control System Project HMI source code - Dev version
 
 ## Requirements
 - `pip install nicegui`

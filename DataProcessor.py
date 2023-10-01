@@ -35,20 +35,24 @@ class DataProcessor:
         Log.log("Processing: ACK", Log.DEBUG)
     
     def __service_breakEnabled(self):
-        ui.notify("Automatic Breaking Activated", type='warning', position='center', progress=True, timeout=3_000)
+        Log.log("Automatic Breaking ACTIVATED.")
+        ui.notify("Automatic Breaking Activated. Forward movement prevented.", type='warning', position='center', progress=True, timeout=5_000)
     
     def __service_breakDisabled(self):
-        ui.notify("Automatic Breaking Released", type='positive', position='center', progress=True, timeout=3_000)
+        Log.log("Automatic Breaking RELEASED.")
+        ui.notify("Automatic Breaking Released.", type='positive', position='center', progress=True, timeout=4_000)
     
     def __service_stopEnabled(self):
-        ui.notify("Emergency Stop Activated", type='negative', position='center', progress=True, timeout=5_000)
+        Log.log("Emergency Stop ACTIVATED.")
+        ui.notify("Emergency Stop Activated. All movement is disabled.", type='negative', position='center', progress=True, timeout=5_000)
         self.headerRow.classes(remove=C_HEADER_DEFAULT, add=C_HEADER_STOP)
     
     def __service_stopDisabled(self):
-        ui.notify("Emergency Stop Deactivated", type='positive', position='center', progress=True, timeout=3_000)
+        Log.log("Emergency Stop DEACTIVATED.")
+        ui.notify("Emergency Stop Deactivated. Movement enabled.", type='positive', position='center', progress=True, timeout=4_000)
         self.headerRow.classes(remove=C_HEADER_STOP, add=C_HEADER_DEFAULT)
     
     def __service_DistSensor(self):
         Log.log(f"Processing: Distance Sensor Reading - 0x{self.dataVal}", Log.DEBUG)
-
+        # TODO
     
