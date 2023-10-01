@@ -44,17 +44,6 @@ async def grab_video_frame() -> Response:
     jpeg = await loop.run_in_executor(process_pool_executor, convert, frame)
     return Response(content=jpeg, media_type='image/jpeg')
 
-with ui.element('div').classes("w-full h-[95vh] bg-slate-900 relative"):
-    with ui.element('div').classes('w-full h-[95vh] absolute'):
-        # For non-flickering image updates an interactive image is much better than `ui.image()`.
-        video_image = ui.interactive_image().classes('w-full h-full absolute-center')
-        video_image.style("max-width: 1500px")
-
-# A timer constantly updates the source of the image.
-# Because data from same paths are cached by the browser,
-# we must force an update by adding the current timestamp to the source.
-ui.timer(interval=FRAME_REFRESH_T, callback=lambda: video_image.set_source(f'/video/frame?{time.time()}'))
-
 
 async def disconnect() -> None:
     """Disconnect all clients from current running server."""
@@ -77,6 +66,18 @@ async def cleanup() -> None:
     video_capture.release()
     # The process pool executor must be shutdown when the app is closed, otherwise the process will not exit.
     process_pool_executor.shutdown()
+
+# ===================================================================================================
+with ui.element('div').classes("w-full h-[95vh] bg-slate-900 relative"):
+    with ui.element('div').classes('w-full h-[95vh] absolute'):
+        # For non-flickering image updates an interactive image is much better than `ui.image()`.
+        video_image = ui.interactive_image().classes('w-full h-full absolute-center')
+        video_image.style("max-width: 1500px")
+
+# A timer constantly updates the source of the image.
+# Because data from same paths are cached by the browser,
+# we must force an update by adding the current timestamp to the source.
+ui.timer(interval=FRAME_REFRESH_T, callback=lambda: video_image.set_source(f'/video/frame?{time.time()}'))
 
 app.on_shutdown(cleanup)
 # We also need to disconnect clients when the app is stopped with Ctrl+C,

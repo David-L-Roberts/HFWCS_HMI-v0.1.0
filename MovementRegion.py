@@ -30,7 +30,7 @@ class MovementRegion():
         # formatting config
         html_format     = "absolute-center"
         margin          = 0.5
-        bg_normal       = "zinc-600"
+        bg_normal       = "zinc-500"
         opacity         = 25
 
         self.name = arrowDirection

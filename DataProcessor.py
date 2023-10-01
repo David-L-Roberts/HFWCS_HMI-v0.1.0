@@ -2,7 +2,7 @@ from Logging import Log
 from nicegui import ui
 import time
 
-C_HEADER_DEFAULT = "bg-stone-900"
+C_HEADER_DEFAULT = "bg-[#010409]"
 C_HEADER_STOP = "bg-rose-900"
 
 class DataProcessor:
@@ -35,17 +35,17 @@ class DataProcessor:
         Log.log("Processing: ACK", Log.DEBUG)
     
     def __service_breakEnabled(self):
-        ui.notify("Automatic Breaking Activated", type='warning', position='center', progress=True)
+        ui.notify("Automatic Breaking Activated", type='warning', position='center', progress=True, timeout=3_000)
     
     def __service_breakDisabled(self):
-        ui.notify("Automatic Breaking Released", type='positive', position='center', progress=True)
+        ui.notify("Automatic Breaking Released", type='positive', position='center', progress=True, timeout=3_000)
     
     def __service_stopEnabled(self):
-        ui.notify("Emergency Stop Activated", type='negative', position='center', progress=True, timeout=7_000)
+        ui.notify("Emergency Stop Activated", type='negative', position='center', progress=True, timeout=5_000)
         self.headerRow.classes(remove=C_HEADER_DEFAULT, add=C_HEADER_STOP)
     
     def __service_stopDisabled(self):
-        ui.notify("Emergency Stop Deactivated", type='positive', position='center', progress=True)
+        ui.notify("Emergency Stop Deactivated", type='positive', position='center', progress=True, timeout=3_000)
         self.headerRow.classes(remove=C_HEADER_STOP, add=C_HEADER_DEFAULT)
     
     def __service_DistSensor(self):

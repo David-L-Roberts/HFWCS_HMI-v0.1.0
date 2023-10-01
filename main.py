@@ -1,3 +1,4 @@
+from WebcamFeed import VideoSelector
 from nicegui import ui, app
 from MovementRegion import MovementRegion
 from SVG_Arrow_Icons import Directions
@@ -10,10 +11,12 @@ from Logging import Log
 
 
 BG_IMG_PATH = "Resources/ExampleIMG.png"
-C_HEADER_DEFAULT = "bg-stone-900"
+C_HEADER_DEFAULT = "bg-[#010409]"
+FRAME_REFRESH_T = 0.1   # refresh period of webcam feed, in seconds
 
 
 # TODO: add webcam feed
+# TODO: Add webcam fields in settings
 
 class MainApp:
     """ Class for running main application """
@@ -37,13 +40,12 @@ class MainApp:
         with ui.row().classes("w-full relative"):
             self.add_header()
         # page body
-        with ui.element('div').classes("w-full h-[95vh] bg-stone-800 relative"):
+        with ui.element('div').classes("w-full h-[95vh] bg-[#0d1117] relative overflow-hidden"):
             self.add_background_img()
             self.add_grid()
-        
+
         # object for processing received serial data
         self.dataProcessor = DataProcessor(self.headerRow)
-
         # add key bindings
         self.keyboard = ui.keyboard(on_key=self.handle_key)
 
@@ -87,13 +89,23 @@ class MainApp:
         with ui.button(icon='menu', color="indigo-500"):
             with ui.menu() as menu:
                 ui.menu_item(
-                    'Emergency Stop', 
-                    lambda: ui.notify("Emergency Stop Activated", type='negative', position='center'), 
+                    'Emergency Stop Enable', 
+                    lambda: self.dataProcessor.processCharCode('FA'), 
                     auto_close=False
                 )
                 ui.menu_item(
-                    'Auto Break', 
-                    lambda: ui.notify("Auto Break Activated", type='warning', position='center'), 
+                    'Emergency Stop Disable', 
+                    lambda: self.dataProcessor.processCharCode('FE'), 
+                    auto_close=False
+                )
+                ui.menu_item(
+                    'Auto Break Enable', 
+                    lambda: self.dataProcessor.processCharCode('FB'), 
+                    auto_close=False
+                )
+                ui.menu_item(
+                    'Auto Break Disable', 
+                    lambda: self.dataProcessor.processCharCode('FC'), 
                     auto_close=False
                 )
                 ui.menu_item(
@@ -111,8 +123,14 @@ class MainApp:
     # ========================================================================================
     def add_background_img(self):
         with ui.element('div').classes('w-full h-[95vh] absolute'):
-            # test image
-            cameraFeed = ui.interactive_image(BG_IMG_PATH).classes("absolute-center max-w-[1920px]")
+            # Place image for camerafeed in background of UI
+            self.cameraFeed = ui.interactive_image().classes("absolute-center max-w-[1920px]")
+        # setup for switching between different video feeds
+        VideoSelector.setVideoImageElement(self.cameraFeed)
+        # A timer constantly updates the source of the image.
+        # Because data from same paths are cached by the browser, we must force an update by 
+        # adding the current timestamp to the source.
+        ui.timer(interval=FRAME_REFRESH_T, callback=VideoSelector.callback)
 
     # ========================================================================================
     #   DIRECTION GRID
@@ -154,6 +172,12 @@ class MainApp:
             print("Key Pressed: K")
             Log.log("Shutting Down Application.")
             app.shutdown()
+        elif (e.key == 'c'):
+            print("Key Pressed: C") # switch to active webcam feed
+            VideoSelector.setSource(0)
+        elif (e.key == 'b'):
+            print("Key Pressed: B") # switch to blancked-out webcam feed
+            VideoSelector.setSource(1)
 
 
     def eyeTrackingEnable(self):
@@ -203,5 +227,6 @@ def main():
         reload=False
     )
 
-main()
+if __name__ == "__main__":
+    main()
 
