@@ -10,24 +10,16 @@ from Logging import Log
 
 
 BG_IMG_PATH = "Resources/ExampleIMG.png"
+C_HEADER_DEFAULT = "bg-stone-900"
 
-# COLOURS
-# stone-900 (header row)
-# #818cf8 = indigo-500 (Highlight color)
 
-# REQ
-# TODO: Title Bar
-#   - Colour change (upon alert raising)
-# TODO: E-stop alert only to disappear when deactiation alert is received
-# TODO: Disable movement command generation when Voice command is active
+# TODO: add webcam feed
 
 class MainApp:
     """ Class for running main application """
     def __init__(self) -> None:
         # remove defualt page padding
         ui.query('.nicegui-content').classes('p-0 m-0 gap-0')
-        # object for processing received serial data
-        self.dataProcessor = DataProcessor()
 
         # initialise comPort object
         settings = load_settings()
@@ -41,18 +33,19 @@ class MainApp:
         self.comReader = ComReader(self.comPort)
         ui.timer(1.0, self.serviceRxData)
 
-        # add key bindings
-        self.keyboard = ui.keyboard(on_key=self.handle_key)
-
-        
         # page header
         with ui.row().classes("w-full relative"):
             self.add_header()
-
         # page body
         with ui.element('div').classes("w-full h-[95vh] bg-stone-800 relative"):
             self.add_background_img()
             self.add_grid()
+        
+        # object for processing received serial data
+        self.dataProcessor = DataProcessor(self.headerRow)
+
+        # add key bindings
+        self.keyboard = ui.keyboard(on_key=self.handle_key)
 
     # ========================================================================================
     #   Header
@@ -63,7 +56,8 @@ class MainApp:
         basis_button = 40
         basis_menu = 30
         # add header elements
-        with ui.header().classes('flex flex-row py-1 px-4 no-wrap h-[5vh] bg-stone-900 items-center'):
+        self.headerRow = ui.header().classes(f'flex flex-row py-1 px-4 no-wrap h-[5vh] {C_HEADER_DEFAULT} items-center')
+        with self.headerRow:
             # Header title text & icon
             with ui.row().classes(f"basis-[{basis_title}%] items-center"):
                 ui.icon("visibility", color="#818cf8"). \
@@ -72,16 +66,17 @@ class MainApp:
                     classes(f"text-lg text-left")
             # status labels for voice commands - enable/disable
             with ui.row().classes(f"basis-[{basis_button}%] flex-row justify-center text-lg"):
-                self.style_indLabel_active = "text-center text-teal-200"
+                self.style_indLabel_activeE = "text-center text-teal-200"
+                self.style_indLabel_activeD = "text-center text-rose-300"
                 self.style_indLabel_deactive = "text-center text-stone-500"
 
                 ui.label("Voice Commands: ") \
                     .classes("text-center text-bold text-[#818cf8]")
                 ui.label("Keyboard Press -") \
                     .classes("text-center")
-                self.indLabelEnable = ui.label("E (Enable)") \
-                    .classes(self.style_indLabel_active)
-                self.indLabelDisable = ui.label("D (Disable)") \
+                self.indLabelEnable = ui.label("E (Enabled)") \
+                    .classes(self.style_indLabel_activeE)
+                self.indLabelDisable = ui.label("D (Disabled)") \
                     .classes(self.style_indLabel_deactive)
             # drop down menu    
             with ui.row().classes(f"basis-[{basis_menu}%] items-center"):
@@ -163,13 +158,15 @@ class MainApp:
 
     def eyeTrackingEnable(self):
         Log.log("Movement command generation has been ENABLED.")
-        self.indLabelEnable.classes(replace=self.style_indLabel_active)
+        self.indLabelEnable.classes(replace=self.style_indLabel_activeE)
         self.indLabelDisable.classes(replace=self.style_indLabel_deactive)
+        MovementRegion.dataTxEnable()
     
     def eyeTrackingDisable(self):
         Log.log("Movement command generation has been DISABLED.")
         self.indLabelEnable.classes(replace=self.style_indLabel_deactive)
-        self.indLabelDisable.classes(replace=self.style_indLabel_active)
+        self.indLabelDisable.classes(replace=self.style_indLabel_activeD)
+        MovementRegion.dataTxDisable()
 
     # ========================================================================================
     #   Manage Data Received
@@ -186,7 +183,6 @@ class MainApp:
     # ========================================================================================
     def testButton(self):
         print(self.comReader._rxDataQueue)
-
 
 
 # =====================================
@@ -208,3 +204,4 @@ def main():
     )
 
 main()
+

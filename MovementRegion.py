@@ -4,7 +4,7 @@ from ComPort import ComPort
 from MessageLib import txMessageCodes
 
 
-DELAY_TIME = 0.60   # Region actiavtion Delay - seconds
+DELAY_TIME = 0.50   # Region actiavtion Delay - seconds
 
 class MovementRegion():
     # class attributes
@@ -16,12 +16,16 @@ class MovementRegion():
     hoverStyle_active   = f"hover:to-{bg_hover2_to}/[.{opacity_hover}] hover:from-{bg_hover2_from}/[.{opacity_hover}]"
 
     comPort: ComPort = None
+    dataTxEnabled: bool = True  # flag for disabling data transmission
+    instances: list = []
 
     def __init__(self, arrowDirection: Directions, basis: int) -> None:
         # Ensure a Com Port has been passed to the class 
         if MovementRegion.comPort == None:
             raise Exception(f"Class {MovementRegion} has not been initialised with a ComPort object. \
                             Please pass it a ComPort object before use.")
+
+        MovementRegion.instances.append(self)   # track all instances created of class
 
         # formatting config
         html_format     = "absolute-center"
@@ -62,7 +66,7 @@ class MovementRegion():
     def startHoverTimer(self):
         self.cursorExit = False
 
-        if self.timerStart:
+        if self.timerStart or not MovementRegion.dataTxEnabled:
             return
         
         ui.timer(DELAY_TIME, self.__timerEvent, once=True)
@@ -102,3 +106,16 @@ class MovementRegion():
     
     def __sendMovementCommand(self, command: bytes):
         MovementRegion.comPort.writeSerial(command)
+    
+    @classmethod
+    def dataTxEnable(cls):
+        cls.dataTxEnabled = True     # Enable generation of movement commands
+    
+    @classmethod
+    def dataTxDisable(cls):
+        cls.dataTxEnabled = False    # disable generation of movement commands
+        for obj in cls.instances:
+            obj.setExitFlag()
+
+# disable tx of new commands
+# single send of stop command

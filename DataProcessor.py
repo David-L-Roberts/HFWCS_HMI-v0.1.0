@@ -1,8 +1,12 @@
 from Logging import Log
 from nicegui import ui
+import time
+
+C_HEADER_DEFAULT = "bg-stone-900"
+C_HEADER_STOP = "bg-rose-900"
 
 class DataProcessor:
-    def __init__(self) -> None:
+    def __init__(self, headerRow: ui.header) -> None:
         # match action codes to service functions
         self.processorDict = {
             "D2": self.__service_ACK,
@@ -14,6 +18,8 @@ class DataProcessor:
             }
         # var for holding distance sensor reading
         self.dataVal = ""
+        # store reference to header row element
+        self.headerRow = headerRow
 
     def processCharCode(self, charCode: str):
         if type(charCode) == tuple:
@@ -29,21 +35,20 @@ class DataProcessor:
         Log.log("Processing: ACK", Log.DEBUG)
     
     def __service_breakEnabled(self):
-        Log.log("Processing: Auto Break Enabled", Log.DEBUG)
-        ui.notify("Automatic Breaking Activated", type='warning', position='center')
+        ui.notify("Automatic Breaking Activated", type='warning', position='center', progress=True)
     
     def __service_breakDisabled(self):
-        Log.log("Processing: Auto Break Disabled", Log.DEBUG)
-        ui.notify("Automatic Breaking Released", type='positive', position='center')
+        ui.notify("Automatic Breaking Released", type='positive', position='center', progress=True)
     
     def __service_stopEnabled(self):
-        Log.log("Processing: Emergency Stop Enabled", Log.DEBUG)
-        ui.notify("Emergency Stop Activated", type='negative', position='center')
+        ui.notify("Emergency Stop Activated", type='negative', position='center', progress=True, timeout=7_000)
+        self.headerRow.classes(remove=C_HEADER_DEFAULT, add=C_HEADER_STOP)
     
     def __service_stopDisabled(self):
-        Log.log("Processing: Emergency Stop Disabled", Log.DEBUG)
-        ui.notify("Emergency Stop Deactivated", type='positive', position='center')
+        ui.notify("Emergency Stop Deactivated", type='positive', position='center', progress=True)
+        self.headerRow.classes(remove=C_HEADER_STOP, add=C_HEADER_DEFAULT)
     
     def __service_DistSensor(self):
-        Log.log(f"Processing: Distance Sensor Reading - {self.dataVal}", Log.DEBUG)
+        Log.log(f"Processing: Distance Sensor Reading - 0x{self.dataVal}", Log.DEBUG)
+
     
