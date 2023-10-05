@@ -1,4 +1,4 @@
-import serial
+from ComPort import ComPort
 from datetime import datetime
 
 
@@ -6,7 +6,7 @@ class ComWriter():
     """Class for writing data to serial port.
     Allows for construction and transmission of a Genisys message.
     """
-    def __init__(self, comPort: serial.Serial) -> None:
+    def __init__(self, comPort: ComPort) -> None:
         self._comPort = comPort
 
     def writeSerial(self):
@@ -25,4 +25,4 @@ class ComWriter():
         else:
             # write message to serial
             self._comPort.write(dataBytes)
-            print(f"Tx Data -> {dataStr}")
+            print(f"Tx Data -> {dataStr} ({self._comPort.getMessageType(dataStr)})")

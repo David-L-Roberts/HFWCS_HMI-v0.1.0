@@ -4,19 +4,15 @@ from MovementRegion import MovementRegion
 from SVG_Arrow_Icons import Directions
 from nicegui.events import KeyEventArguments
 from ComPort import ComPort
-from Utils import load_settings
+from Utils import SETTINGS
 from ComReader import ComReader
 from DataProcessor import DataProcessor
 from Logging import Log
+from MessageLib import txMessageCodes
+import time
 
-
-BG_IMG_PATH = "Resources/ExampleIMG.png"
 C_HEADER_DEFAULT = "bg-[#010409]"
-FRAME_REFRESH_T = 0.1   # refresh period of webcam feed, in seconds
 
-
-# TODO: Add webcam fields in settings
-# TODO: Add startup hello message
 # TODO: Distance sensor reading display
 
 class MainApp:
@@ -26,11 +22,10 @@ class MainApp:
         ui.query('.nicegui-content').classes('p-0 m-0 gap-0')
 
         # initialise comPort object
-        settings = load_settings()
         self.comPort = ComPort(
-            portNum=settings["ComPort"],
-            baudrate=settings["Baudrate"],
-            timeout=settings["ReadTimeoutSec"]
+            portNum=SETTINGS["ComPort"],
+            baudrate=SETTINGS["Baudrate"],
+            timeout=SETTINGS["ReadTimeoutSec"]
         )
         MovementRegion.comPort = self.comPort
         # Handle data received from serial 
@@ -49,6 +44,20 @@ class MainApp:
         self.dataProcessor = DataProcessor(self.headerRow)
         # add key bindings
         self.keyboard = ui.keyboard(on_key=self.handle_key)
+
+        self.startup_transaction()
+
+    def startup_transaction(self):
+        self.comPort.writeSerial(txMessageCodes["Hello"])
+        Log.log("Attempting to establish connection to Arduino.")
+        while True:
+            time.sleep(0.5)
+            self.serviceRxData()
+            if self.dataProcessor.checkACK():
+                Log.log("Arduino connected successfully.")
+                return 
+            
+
 
     # ========================================================================================
     #   Header
@@ -132,7 +141,7 @@ class MainApp:
         # A timer constantly updates the source of the image.
         # Because data from same paths are cached by the browser, we must force an update by 
         # adding the current timestamp to the source.
-        ui.timer(interval=FRAME_REFRESH_T, callback=VideoSelector.callback)
+        ui.timer(interval=SETTINGS["CameraRefreshT"], callback=VideoSelector.callback)
 
     # ========================================================================================
     #   DIRECTION GRID

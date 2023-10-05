@@ -11,11 +11,8 @@ from fastapi import Response
 
 import nicegui.globals
 from nicegui import app, ui
+from Utils import SETTINGS
 
-# TODO import these from settings
-TESTING = False 
-CAM_1 = 0
-CAM_BLANK = 1
 
 # In case webcam unavailable, this will provide a black placeholder image.
 black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGBg+A8AAQQBAHAgZQsAAAAASUVORK5CYII='
@@ -86,11 +83,11 @@ async def cleanup() -> None:
 
 # ===================================================================================================
 # Use OpenCV to access the webcam.
-if TESTING:
-    temp = cv2.VideoCapture(CAM_BLANK)
+if SETTINGS["DisableCameraFeed"]:
+    temp = cv2.VideoCapture(SETTINGS["CameraBlank"])
     video_capture = [temp, temp]
 else:
-    video_capture = [cv2.VideoCapture(CAM_1), cv2.VideoCapture(CAM_BLANK)]
+    video_capture = [cv2.VideoCapture(SETTINGS["Camera1"]), cv2.VideoCapture(SETTINGS["CameraBlank"])]
 
 # release and clean up resources on shutdown
 app.on_shutdown(cleanup)

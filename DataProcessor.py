@@ -20,6 +20,8 @@ class DataProcessor:
         self.dataVal = ""
         # store reference to header row element
         self.headerRow = headerRow
+        # flag for acknowledgement reception
+        self.recACK = False
 
     def processCharCode(self, charCode: str):
         if type(charCode) == tuple:
@@ -33,6 +35,13 @@ class DataProcessor:
     
     def __service_ACK(self):
         Log.log("Processing: ACK", Log.DEBUG)
+        self.recACK = True
+
+    def checkACK(self):
+        """Returns `True` if an ACK was received. Will reset ACK flag."""
+        response = self.recACK
+        self.recACK = False
+        return response
     
     def __service_breakEnabled(self):
         Log.log("Automatic Breaking ACTIVATED.")

@@ -1,5 +1,9 @@
 {
     "ComPort": "COM8",
     "Baudrate": 9600,
-    "ReadTimeoutSec": 1
+    "ReadTimeoutSec": 1,
+    "Camera1": 0,
+    "CameraBlank": 1,
+    "DisableCameraFeed": false,
+    "CameraRefreshT": 0.1
 }

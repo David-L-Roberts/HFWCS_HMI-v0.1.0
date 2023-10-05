@@ -1,4 +1,3 @@
-import SVG_Arrow_Icons
+from Utils import SETTINGS
 
-print(len(locals()))
-print(len(globals()))
+print(SETTINGS["Baudrate"])

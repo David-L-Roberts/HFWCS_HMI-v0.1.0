@@ -1,5 +1,6 @@
 import serial.tools.list_ports as port_list
 import serial
+from MessageLib import msgTypeLookup
 
 
 class ComPort(serial.Serial):
@@ -31,3 +32,12 @@ class ComPort(serial.Serial):
         else:
             raise Exception("No Com ports Available!")
     
+    def getMessageType(self, controlCode: str):
+        """Return the message type of the last read message."""
+        try:
+            messageType = msgTypeLookup[controlCode[:2]]
+        except:
+            messageType = controlCode
+            print(f"Received invalid Control Code ({controlCode}).")
+
+        return messageType

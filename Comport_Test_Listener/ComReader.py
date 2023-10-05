@@ -1,7 +1,6 @@
 from threading import Thread, Event
-from MessageLib import msgTypeLookup
 import time
-import serial
+from ComPort import ComPort
 import Logging as Log 
 
 
@@ -12,7 +11,7 @@ class ComReader():
 
     Provides methods to read data from the serial.
     """
-    def __init__(self, comPort: serial.Serial, filter: bool=True, maxWaitSec: float=3) -> None:
+    def __init__(self, comPort: ComPort, filter: bool=True, maxWaitSec: float=3) -> None:
         self._comPort = comPort
         self._filter = filter
         self._currentMessage = ""
@@ -37,7 +36,7 @@ class ComReader():
         if inputBytes == b'':
             return
         inputStr = inputBytes.hex(' ').upper()
-        print(inputStr)
+        print(inputStr, f"({self._comPort.getMessageType(inputStr)})")
 
 
     def __readRaw(self):
@@ -47,17 +46,3 @@ class ComReader():
             inputBytes += self._comPort.read(10)
         return inputBytes
 
-
-    def getMessageType(self):   # SS
-        """Return the message type of the last read message."""
-        try:
-            controlCode = self._currentMessage[:2]
-        except:
-            Log.log("No message recieved.", logFlag="|Debug|")
-        try:
-            messageType = msgTypeLookup[controlCode]
-        except:
-            messageType = controlCode
-            Log.log("Received invalid Control Code.", logFlag="|ERROR|")
-
-        return messageType
