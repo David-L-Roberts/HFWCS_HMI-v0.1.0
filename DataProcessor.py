@@ -2,11 +2,14 @@ from Logging import Log
 from nicegui import ui
 import time
 
-C_HEADER_DEFAULT = "bg-[#010409]"
+C_HEADER_DEFAULT = "bg-[#0d1117]"
 C_HEADER_STOP = "bg-rose-900"
 
+MAX_DIST_VAL = 500  # max distance reading of sensor, in cm
+CONV_FACT = MAX_DIST_VAL/255    # conversion factor for distance reading
+
 class DataProcessor:
-    def __init__(self, headerRow: ui.header) -> None:
+    def __init__(self, headerRow: ui.header, distanceLabel: ui.label) -> None:
         # match action codes to service functions
         self.processorDict = {
             "D2": self.__service_ACK,
@@ -20,6 +23,8 @@ class DataProcessor:
         self.dataVal = ""
         # store reference to header row element
         self.headerRow = headerRow
+        # store reference to distance label element
+        self.distlabel = distanceLabel
         # flag for acknowledgement reception
         self.recACK = False
 
@@ -63,5 +68,10 @@ class DataProcessor:
     
     def __service_DistSensor(self):
         Log.log(f"Processing: Distance Sensor Reading - 0x{self.dataVal}", Log.DEBUG)
-        # TODO
-    
+        # convert hex str to int val
+        dataInt: int = int.from_bytes(bytes.fromhex(self.dataVal), byteorder='big')
+        # convert Int to distance (in cm)
+        distanceFloat: float = round(dataInt*CONV_FACT, 1)
+        # conver to string. format with 3 sig figs
+        distStr: str = str(distanceFloat)
+        self.distlabel.set_text(f"{distStr} cm")

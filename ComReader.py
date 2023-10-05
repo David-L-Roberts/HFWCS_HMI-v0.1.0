@@ -44,7 +44,9 @@ class ComReader():
             if joinFlag:
                 # group distance sensor code with distance sensor data value into a tuple, before adding to queue
                 byteCode = (self._rxDataQueue.pop(), byteCode)
+                self._rxDataQueue.append(byteCode)
                 joinFlag = False
+                continue
             elif byteCode == "FD":  # flag special processing for distance sensor code
                 joinFlag = True
             # add received bytes to data queue

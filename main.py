@@ -11,7 +11,7 @@ from Logging import Log
 from MessageLib import txMessageCodes
 import time
 
-C_HEADER_DEFAULT = "bg-[#010409]"
+C_HEADER_DEFAULT = "bg-[#0d1117]"
 
 # TODO: Distance sensor reading display
 
@@ -41,7 +41,7 @@ class MainApp:
             self.add_grid()
 
         # object for processing received serial data
-        self.dataProcessor = DataProcessor(self.headerRow)
+        self.dataProcessor = DataProcessor(self.headerRow, self.distanceLabel)
         # add key bindings
         self.keyboard = ui.keyboard(on_key=self.handle_key)
 
@@ -51,13 +51,12 @@ class MainApp:
         self.comPort.writeSerial(txMessageCodes["Hello"])
         Log.log("Attempting to establish connection to Arduino.")
         while True:
-            time.sleep(0.5)
+            time.sleep(0.25)
             self.serviceRxData()
             if self.dataProcessor.checkACK():
                 Log.log("Arduino connected successfully.")
                 return 
             
-
 
     # ========================================================================================
     #   Header
@@ -66,7 +65,8 @@ class MainApp:
         # header spacing allocation
         basis_title = 30
         basis_button = 40
-        basis_menu = 30
+        basis_distance = 20
+        basis_menu = 10
         # add header elements
         self.headerRow = ui.header().classes(f'flex flex-row py-1 px-4 no-wrap h-[5vh] {C_HEADER_DEFAULT} items-center')
         with self.headerRow:
@@ -90,6 +90,15 @@ class MainApp:
                     .classes(self.style_indLabel_activeE)
                 self.indLabelDisable = ui.label("D (Disabled)") \
                     .classes(self.style_indLabel_deactive)
+                
+            # distance sensor reading    
+            with ui.row().classes(f"basis-[{basis_distance}%] items-center justify-center gap-0 flex-row"):
+                ui.element('div').classes("basis-[25%]")
+                with ui.row().classes("basis-[75%]"):
+                    ui.icon("sensors", color="#818cf8"). \
+                        classes(f"text-3xl")
+                    self.distanceLabel = ui.label("500 cm").classes(f"text-lg text-left pl-[3px] text-stone-400")
+
             # drop down menu    
             with ui.row().classes(f"basis-[{basis_menu}%] items-center"):
                 ui.label("Menu").classes(f"text-lg text-right pr-[5px] ml-auto")
@@ -98,34 +107,44 @@ class MainApp:
     def create_menu(self):
         with ui.button(icon='menu', color="indigo-500"):
             with ui.menu() as menu:
+                if SETTINGS['Testing']:
+                    ui.menu_item(
+                        'Emergency Stop Enable', 
+                        lambda: self.dataProcessor.processCharCode('FA'), 
+                        auto_close=False
+                    )
+                    ui.menu_item(
+                        'Emergency Stop Disable', 
+                        lambda: self.dataProcessor.processCharCode('FE'), 
+                        auto_close=False
+                    )
+                    ui.menu_item(
+                        'Auto Break Enable', 
+                        lambda: self.dataProcessor.processCharCode('FB'), 
+                        auto_close=False
+                    )
+                    ui.menu_item(
+                        'Auto Break Disable', 
+                        lambda: self.dataProcessor.processCharCode('FC'), 
+                        auto_close=False
+                    )
+                    ui.separator()
+
                 ui.menu_item(
-                    'Emergency Stop Enable', 
-                    lambda: self.dataProcessor.processCharCode('FA'), 
+                    'Enable Camera (C)', 
+                    lambda: VideoSelector.setSource(0),
                     auto_close=False
                 )
                 ui.menu_item(
-                    'Emergency Stop Disable', 
-                    lambda: self.dataProcessor.processCharCode('FE'), 
-                    auto_close=False
-                )
-                ui.menu_item(
-                    'Auto Break Enable', 
-                    lambda: self.dataProcessor.processCharCode('FB'), 
-                    auto_close=False
-                )
-                ui.menu_item(
-                    'Auto Break Disable', 
-                    lambda: self.dataProcessor.processCharCode('FC'), 
-                    auto_close=False
-                )
-                ui.menu_item(
-                    'Test', 
-                    self.testButton, 
+                    'Disable Camera (B)', 
+                    lambda: VideoSelector.setSource(1),
                     auto_close=False
                 )
                 ui.separator()
+                
                 ui.menu_item('Terminate Application (K)', lambda: app.shutdown())
                 ui.separator()
+                
                 ui.menu_item('Close', on_click=menu.close)
 
     # ========================================================================================
