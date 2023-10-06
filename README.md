@@ -6,3 +6,4 @@
 - `pip install numpy`
 - `pip install pywebview`
 - `pip install opencv-python`
+- `pip install pyserial`
