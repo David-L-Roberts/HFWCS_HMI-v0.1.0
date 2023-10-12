@@ -1,5 +1,12 @@
 from datetime import datetime
 import logging
+import os
+
+try:
+    dir = "Logs"
+    os.mkdir(dir)
+except FileExistsError:
+    pass
 
 FILE_PATH = f"Logs\\Log_{datetime.now().strftime('%Y-%m-%d')}.log"
 logging.basicConfig(

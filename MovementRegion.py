@@ -2,7 +2,7 @@ from nicegui import ui
 from SVG_Arrow_Icons import SvgElement, Directions
 from ComPort import ComPort
 from MessageLib import txMessageCodes
-
+from WebcamFeed import VideoSelector
 
 DELAY_TIME = 0.50   # Region actiavtion Delay - seconds
 
@@ -90,6 +90,15 @@ class MovementRegion():
         self.regionActive = True
         self.__reStyleRegion()        # restyle the region as active
         self.__sendMovementCommand(self.movementCmd)    # send movement command corresponding with movement region's direction
+
+        # don't switch camera feeds if cam is disabled
+        if VideoSelector.video_src == 2:
+            return
+        # switch to reverse camera when moving backwards, otherwise, use forward camera
+        if (self.name == Directions.DOWN):
+            VideoSelector.setSource(1)
+        else:
+            VideoSelector.setSource(0)
 
     def __reStyleRegion(self):
         # change styling of movement region 

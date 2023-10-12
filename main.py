@@ -13,8 +13,6 @@ import time
 
 C_HEADER_DEFAULT = "bg-[#0d1117]"
 
-# TODO: Distance sensor reading display
-
 class MainApp:
     """ Class for running main application """
     def __init__(self) -> None:
@@ -97,7 +95,7 @@ class MainApp:
                 with ui.row().classes("basis-[75%]"):
                     ui.icon("sensors", color="#818cf8"). \
                         classes(f"text-3xl")
-                    self.distanceLabel = ui.label("500 cm").classes(f"text-lg text-left pl-[3px] text-stone-400")
+                    self.distanceLabel = ui.label("500+ cm").classes(f"text-lg text-left pl-[3px] text-stone-400")
 
             # drop down menu    
             with ui.row().classes(f"basis-[{basis_menu}%] items-center"):
@@ -131,13 +129,18 @@ class MainApp:
                     ui.separator()
 
                 ui.menu_item(
-                    'Enable Camera (C)', 
+                    'Front Camera (C)', 
                     lambda: VideoSelector.setSource(0),
                     auto_close=False
                 )
                 ui.menu_item(
-                    'Disable Camera (B)', 
+                    'Back Camera (B)', 
                     lambda: VideoSelector.setSource(1),
+                    auto_close=False
+                )
+                ui.menu_item(
+                    'Disable Camera', 
+                    lambda: VideoSelector.setSource(2),
                     auto_close=False
                 )
                 ui.separator()
@@ -203,10 +206,10 @@ class MainApp:
             Log.log("Shutting Down Application.")
             app.shutdown()
         elif (e.key == 'c'):
-            print("Key Pressed: C") # switch to active webcam feed
+            print("Key Pressed: C") # switch to front webcam feed
             VideoSelector.setSource(0)
         elif (e.key == 'b'):
-            print("Key Pressed: B") # switch to blancked-out webcam feed
+            print("Key Pressed: B") # switch to backward webcam feed
             VideoSelector.setSource(1)
 
 

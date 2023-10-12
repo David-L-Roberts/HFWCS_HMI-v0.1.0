@@ -68,10 +68,15 @@ class DataProcessor:
     
     def __service_DistSensor(self):
         Log.log(f"Processing: Distance Sensor Reading - 0x{self.dataVal}", Log.DEBUG)
-        # convert hex str to int val
-        dataInt: int = int.from_bytes(bytes.fromhex(self.dataVal), byteorder='big')
-        # convert Int to distance (in cm)
-        distanceFloat: float = round(dataInt*CONV_FACT, 1)
-        # conver to string. format with 3 sig figs
-        distStr: str = str(distanceFloat)
+        if self.dataVal == "FF":
+            # special case for max distance
+            distStr = "500+"
+        else:
+            # convert hex str to int val
+            dataInt: int = int.from_bytes(bytes.fromhex(self.dataVal), byteorder='big')
+            # convert Int to distance (in cm)
+            distanceFloat: float = round(dataInt*CONV_FACT, 1)
+            # convert to string
+            distStr: str = str(distanceFloat)
+
         self.distlabel.set_text(f"{distStr} cm")

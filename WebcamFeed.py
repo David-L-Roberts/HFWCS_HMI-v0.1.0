@@ -28,7 +28,7 @@ def convert(frame: np.ndarray) -> bytes:
     return imencode_image.tobytes()
 
 @app.get('/video/frame0')
-async def grab_video_frame1() -> Response:
+async def grab_video_frame0() -> Response:
     """Create a web route which always provides the latest image from OpenCV.
     Utilises FastAPI's `app.get`."""
     if not video_capture[0].isOpened():
@@ -59,6 +59,11 @@ async def grab_video_frame1() -> Response:
     jpeg = await loop.run_in_executor(process_pool_executor, convert, frame)
     return Response(content=jpeg, media_type='image/jpeg')
 
+@app.get('/video/frame2')
+async def grab_video_frame2() -> Response:
+    """Create a web route which always provides a blank image"""
+    return placeholder
+
 async def disconnect() -> None:
     """Disconnect all clients from current running server."""
     for client in nicegui.globals.clients.keys():
@@ -83,11 +88,11 @@ async def cleanup() -> None:
 
 # ===================================================================================================
 # Use OpenCV to access the webcam.
+blankCam = cv2.VideoCapture(SETTINGS["CameraBlank"])
 if SETTINGS["DisableCameraFeed"]:
-    temp = cv2.VideoCapture(SETTINGS["CameraBlank"])
-    video_capture = [temp, temp]
+    video_capture = [blankCam, blankCam, blankCam]
 else:
-    video_capture = [cv2.VideoCapture(SETTINGS["Camera1"]), cv2.VideoCapture(SETTINGS["CameraBlank"])]
+    video_capture = [cv2.VideoCapture(SETTINGS["CameraFront"]), cv2.VideoCapture(SETTINGS["CameraBack"]), blankCam]
 
 # release and clean up resources on shutdown
 app.on_shutdown(cleanup)
@@ -97,7 +102,8 @@ signal.signal(signal.SIGINT, handle_sigint)
 
 # ===================================================================================================
 class VideoSelector:
-    video_src = 0
+    """Class for selecting one of the open camera feeds in `video_capture`."""
+    video_src = 0   #'/video/frame' endpoint number
     vid_img: ui.interactive_image = None
     process_executor = process_pool_executor
 
