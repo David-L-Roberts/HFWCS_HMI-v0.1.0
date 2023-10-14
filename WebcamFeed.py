@@ -78,7 +78,7 @@ def handle_sigint(signum, frame) -> None:
 
 async def cleanup() -> None:
     # This prevents ugly stack traces when auto-reloading on code change,
-    # because otherwise disconnected clients try to reconnect to the newly started server.
+    # otherwise disconnected clients try to reconnect to the newly started server.
     await disconnect()
     # Release the webcam hardware so it can be used by other applications again.
     for video_obj in video_capture:

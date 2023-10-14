@@ -125,6 +125,3 @@ class MovementRegion():
         cls.dataTxEnabled = False    # disable generation of movement commands
         for obj in cls.instances:
             obj.setExitFlag()
-
-# disable tx of new commands
-# single send of stop command
