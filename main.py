@@ -46,14 +46,14 @@ class MainApp:
         self.startup_transaction()
 
     def startup_transaction(self):
-        self.comPort.writeSerial(txMessageCodes["Hello"])
         Log.log("Attempting to establish connection to Arduino.")
         while True:
-            time.sleep(0.25)
+            self.comPort.writeSerial(txMessageCodes["Hello"])
             self.serviceRxData()
             if self.dataProcessor.checkACK():
                 Log.log("Arduino connected successfully.")
                 return 
+            time.sleep(3)
             
 
     # ========================================================================================

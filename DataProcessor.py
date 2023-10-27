@@ -50,11 +50,11 @@ class DataProcessor:
     
     def __service_breakEnabled(self):
         Log.log("Automatic Breaking ACTIVATED.")
-        ui.notify("Automatic Breaking Activated. Forward movement prevented.", type='warning', position='center', progress=True, timeout=5_000)
+        ui.notify("Automatic Breaking Activated. Forward movement prevented.", type='warning', position='center', progress=True, timeout=4_000)
     
     def __service_breakDisabled(self):
         Log.log("Automatic Breaking RELEASED.")
-        ui.notify("Automatic Breaking Released.", type='positive', position='center', progress=True, timeout=4_000)
+        ui.notify("Automatic Breaking Released.", type='positive', position='center', progress=True, timeout=3_000)
     
     def __service_stopEnabled(self):
         Log.log("Emergency Stop ACTIVATED.")
