@@ -1,5 +1,5 @@
 {
-    "ComPort": "COM3",
+    "ComPort": "COM4",
     "Baudrate": 9600,
     "ReadTimeoutSec": 1,
     "CameraFront": 0,
